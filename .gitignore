@@ -1,0 +1,40 @@
+# Build output
+bin/
+obj/
+
+# IDE files
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Secrets and local configuration
+.env
+.env.*
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+**/secrets.json
+
+# Database files
+*.mdf
+*.ldf
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs and published artifacts
+logs/
+*.log
+publish/
+artifacts/
+
+# Dependencies and test/build output
+node_modules/
+TestResults/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
