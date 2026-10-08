@@ -1,0 +1,81 @@
+@model AcxiomCRM.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Log In";
+    Layout = "_Layout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow border-0 rounded-3 mt-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-3 bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+                        <i class="bi bi-person-fill-lock fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Sign In</h3>
+                    <p class="text-muted small">Access your AcxiomCRM workspace</p>
+                </div>
+
+                <form asp-controller="Account" asp-action="Login" method="post" asp-route-returnUrl="@Model.ReturnUrl">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold text-secondary"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Email" class="form-control" placeholder="name@example.com" id="loginEmail" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label small fw-semibold text-secondary"></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" id="loginPassword" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label small text-secondary"></label>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </button>
+                    </div>
+
+                    <div class="text-center small text-muted">
+                        Don't have an account? <a asp-action="Register" class="text-primary text-decoration-none">Register here</a>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <!-- Demo quick fill for testing -->
+                <div class="small bg-light p-3 rounded">
+                    <span class="fw-semibold text-secondary d-block mb-2"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Demo Accounts:</span>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-danger flex-fill" onclick="fillLogin('admin@acxiomcrm.com', 'Acxiom@2026!')">Admin</button>
+                        <button type="button" class="btn btn-sm btn-outline-warning flex-fill" onclick="fillLogin('manager@acxiomcrm.com', 'Acxiom@2026!')">Manager</button>
+                        <button type="button" class="btn btn-sm btn-outline-info flex-fill" onclick="fillLogin('sales@acxiomcrm.com', 'Acxiom@2026!')">Sales</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function fillLogin(email, pwd) {
+            document.getElementById('loginEmail').value = email;
+            document.getElementById('loginPassword').value = pwd;
+        }
+    </script>
+}

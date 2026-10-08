@@ -1,0 +1,186 @@
+@model AcxiomCRM.ViewModels.Opportunity.OpportunityDetailsViewModel
+@{
+    ViewData["Title"] = Model.Opportunity.OpportunityName;
+    var stageBadge = Model.Opportunity.Stage switch {
+        "Qualification" => "bg-info text-dark",
+        "Proposal" => "bg-primary",
+        "Negotiation" => "bg-warning text-dark",
+        "Won" => "bg-success",
+        "Lost" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="h3 fw-bold text-dark mb-0">@Model.Opportunity.OpportunityName</h2>
+            <span class="badge @stageBadge">@Model.Opportunity.Stage</span>
+            <span class="badge bg-light text-dark border">Status: @Model.Opportunity.Status</span>
+        </div>
+        <span class="text-muted small">
+            Customer: <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.Opportunity.CustomerId" class="fw-bold text-decoration-none">@(Model.Opportunity.Customer?.CustomerName)</a> &bull;
+            Owner: @(Model.Opportunity.Owner?.FullName ?? "Unassigned")
+        </span>
+    </div>
+    <div class="d-flex gap-2">
+        @if (Model.CanEdit)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Opportunity.OpportunityId" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-pencil me-1"></i> Edit
+            </a>
+        }
+        <a asp-controller="FollowUps" asp-action="Create" asp-route-opportunityId="@Model.Opportunity.OpportunityId" class="btn btn-danger btn-sm">
+            <i class="bi bi-calendar-plus me-1"></i> Follow-Up
+        </a>
+        <a asp-controller="Activities" asp-action="Create" asp-route-opportunityId="@Model.Opportunity.OpportunityId" class="btn btn-secondary btn-sm">
+            <i class="bi bi-chat-dots me-1"></i> Log Activity
+        </a>
+    </div>
+</div>
+
+<!-- Stage Progression Buttons -->
+<div class="card border-0 bg-white shadow-sm mb-4">
+    <div class="card-body p-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <div>
+            <strong class="text-secondary small text-uppercase">Sales Stage Advance:</strong>
+            <span class="text-muted small ms-2">Switch deal stage directly:</span>
+        </div>
+        <div class="btn-group btn-group-sm">
+            @foreach (var stageName in new[] { "Qualification", "Proposal", "Negotiation", "Won", "Lost" })
+            {
+                <form asp-action="ChangeStage" asp-route-id="@Model.Opportunity.OpportunityId" asp-route-newStage="@stageName" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn @(Model.Opportunity.Stage == stageName ? "btn-dark active" : "btn-outline-secondary") me-1">
+                        @stageName
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <!-- Financial Metrics -->
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="fw-bold mb-0 text-muted text-uppercase small">Opportunity Financials</h6>
+            </div>
+            <div class="card-body pt-0 small">
+                <div class="mb-3">
+                    <span class="text-muted d-block">Deal Amount:</span>
+                    <span class="fs-4 fw-bold text-dark">@Model.Opportunity.Amount.ToString("C")</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted d-block">Win Probability:</span>
+                    <div class="progress mt-1 mb-1" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @(Model.Opportunity.Probability)%"></div>
+                    </div>
+                    <span class="fw-semibold">@Model.Opportunity.Probability%</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted d-block">Weighted Pipeline Value:</span>
+                    <span class="fs-5 fw-bold text-success">@Model.Opportunity.WeightedAmount.ToString("C")</span>
+                </div>
+                <div class="mb-2"><strong>Expected Close:</strong> @Model.Opportunity.ExpectedCloseDate.ToString("yyyy-MM-dd")</div>
+                <div class="mb-2"><strong>Created:</strong> @Model.Opportunity.CreatedDate.ToString("yyyy-MM-dd HH:mm") UTC</div>
+                <div class="mb-0"><strong>Created By:</strong> @Model.Opportunity.CreatedBy</div>
+                @if (!string.IsNullOrEmpty(Model.Opportunity.Notes))
+                {
+                    <hr class="my-3">
+                    <div class="text-muted"><strong>Notes:</strong><br />@Model.Opportunity.Notes</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Follow-Ups and Activities -->
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="bi bi-calendar-event text-danger me-2"></i>Follow-Ups (@Model.FollowUps.Count)</h6>
+                <a asp-controller="FollowUps" asp-action="Create" asp-route-opportunityId="@Model.Opportunity.OpportunityId" class="btn btn-sm btn-outline-danger">+ Schedule</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.FollowUps.Any())
+                            {
+                                <tr><td colspan="4" class="text-center py-3 text-muted">No follow-ups scheduled for this deal.</td></tr>
+                            }
+                            else
+                            {
+                                foreach (var f in Model.FollowUps)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="FollowUps" asp-action="Details" asp-route-id="@f.FollowUpId" class="text-decoration-none fw-semibold">
+                                                @f.Subject
+                                            </a>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border">@f.FollowUpType</span></td>
+                                        <td>@f.FollowUpDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td><span class="badge @(f.Status == "Completed" ? "bg-success" : (f.Status == "Missed" ? "bg-danger" : "bg-warning text-dark"))">@f.Status</span></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="bi bi-chat-dots text-secondary me-2"></i>Logged Activities (@Model.Activities.Count)</h6>
+                <a asp-controller="Activities" asp-action="Create" asp-route-opportunityId="@Model.Opportunity.OpportunityId" class="btn btn-sm btn-outline-secondary">+ Log</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.Activities.Any())
+                            {
+                                <tr><td colspan="4" class="text-center py-3 text-muted">No activities recorded for this deal.</td></tr>
+                            }
+                            else
+                            {
+                                foreach (var a in Model.Activities)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Activities" asp-action="Details" asp-route-id="@a.ActivityId" class="text-decoration-none fw-semibold">
+                                                @a.Subject
+                                            </a>
+                                        </td>
+                                        <td><span class="badge bg-light text-dark border">@a.ActivityType</span></td>
+                                        <td>@a.ActivityDate.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td><span class="badge bg-success">@a.Status</span></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,94 @@
+@model AcxiomCRM.ViewModels.Report.ConversionReportViewModel
+@{
+    ViewData["Title"] = "Conversion Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 fw-bold text-dark mb-0"><i class="bi bi-arrow-repeat text-success me-2"></i>Lead Conversion Analytics</h2>
+        <span class="text-muted small">Tracking lead velocity, qualification yield, and revenue outcomes</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Conversion" asp-route-export="true" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-download me-1"></i> Export to CSV
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> All Reports
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <span class="text-muted small fw-bold text-uppercase">Total Leads Evaluated</span>
+            <span class="h3 fw-bold text-dark mb-0">@Model.TotalLeads</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <span class="text-muted small fw-bold text-uppercase">Converted into Customers</span>
+            <span class="h3 fw-bold text-success mb-0">@Model.ConvertedLeads</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <span class="text-muted small fw-bold text-uppercase">Conversion Rate</span>
+            <span class="h3 fw-bold text-primary mb-0">@Model.ConversionRate%</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm text-center p-3">
+            <span class="text-muted small fw-bold text-uppercase">Created Pipeline Value</span>
+            <span class="h3 fw-bold text-info mb-0">@Model.ConvertedPipelineTotal.ToString("C0")</span>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 py-3">
+        <h6 class="fw-bold mb-0">Converted Leads Log</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 small">
+                <thead class="table-light">
+                    <tr>
+                        <th>Lead Code</th>
+                        <th>Lead Name</th>
+                        <th>Source</th>
+                        <th>Converted Customer</th>
+                        <th>Assigned To</th>
+                        <th>Created Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.ConvertedList.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No converted leads recorded yet.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var l in Model.ConvertedList)
+                        {
+                            <tr>
+                                <td class="fw-bold text-muted">@l.LeadCode</td>
+                                <td class="fw-semibold">@l.LeadName</td>
+                                <td><span class="badge bg-light text-dark border">@l.Source</span></td>
+                                <td>
+                                    <span class="text-success fw-bold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> @(l.ConvertedCustomerName ?? "Customer Created")
+                                    </span>
+                                </td>
+                                <td>@l.AssignedToName</td>
+                                <td>@l.CreatedDate.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+@model AcxiomCRM.ViewModels.User.CreateUserViewModel
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h3 class="fw-bold mb-0 text-dark">Create New CRM User</h3>
+                <span class="text-muted small">Provision an operator profile with role-based CRM access.</span>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Users
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label small fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" placeholder="Mark Taylor" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" placeholder="mark.taylor@acxiomcrm.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Role" class="form-label small fw-semibold"></label>
+                        <select asp-for="Role" class="form-select">
+                            <option value="SalesExecutive">SalesExecutive (Assigned Records Only)</option>
+                            <option value="Manager">Manager (Team Records & Pipeline Reports)</option>
+                            <option value="Admin">Admin (Full System & Security Access)</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label small fw-semibold"></label>
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                        <div class="form-text small">At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label small fw-semibold"></label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-person-check-fill me-1"></i> Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,86 @@
+@model AcxiomCRM.Models.Activity
+@{
+    ViewData["Title"] = $"Activity: {Model.Subject}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <div class="d-flex align-items-center gap-2">
+            <h2 class="h3 fw-bold text-dark mb-0">@Model.Subject</h2>
+            <span class="badge @(Model.Status == "Completed" ? "bg-success" : "bg-warning text-dark")">@Model.Status</span>
+            <span class="badge bg-light text-dark border">@Model.ActivityType</span>
+        </div>
+        <span class="text-muted small">Logged by: @Model.CreatedBy &bull; Handled by: @(Model.AssignedUser?.FullName ?? "Unassigned")</span>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.ActivityId" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="fw-bold mb-0 text-muted text-uppercase small">Activity Record</h6>
+            </div>
+            <div class="card-body pt-0 small">
+                <div class="mb-2"><strong>Date & Time:</strong> @Model.ActivityDate.ToString("yyyy-MM-dd HH:mm") UTC</div>
+                <div class="mb-2"><strong>Type:</strong> @Model.ActivityType</div>
+                <div class="mb-2"><strong>Status:</strong> @Model.Status</div>
+                <div class="mb-2"><strong>Assigned To:</strong> @(Model.AssignedUser?.FullName ?? "Unassigned")</div>
+                <div class="mb-2"><strong>Created By:</strong> @Model.CreatedBy</div>
+                <div class="mb-0"><strong>Created Date:</strong> @Model.CreatedDate.ToString("yyyy-MM-dd HH:mm") UTC</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h6 class="fw-bold mb-0 text-muted text-uppercase small">Association & Notes</h6>
+            </div>
+            <div class="card-body pt-0 small">
+                @if (Model.Customer != null)
+                {
+                    <div class="mb-3">
+                        <span class="text-muted d-block">Related Customer:</span>
+                        <a asp-controller="Customers" asp-action="Details" asp-route-id="@Model.CustomerId" class="fw-bold text-decoration-none">
+                            <i class="bi bi-building me-1"></i> @Model.Customer.CustomerName
+                        </a>
+                    </div>
+                }
+                @if (Model.Lead != null)
+                {
+                    <div class="mb-3">
+                        <span class="text-muted d-block">Related Lead:</span>
+                        <a asp-controller="Leads" asp-action="Details" asp-route-id="@Model.LeadId" class="fw-bold text-decoration-none">
+                            <i class="bi bi-funnel me-1"></i> @Model.Lead.LeadName
+                        </a>
+                    </div>
+                }
+                @if (Model.Opportunity != null)
+                {
+                    <div class="mb-3">
+                        <span class="text-muted d-block">Related Opportunity:</span>
+                        <a asp-controller="Opportunities" asp-action="Details" asp-route-id="@Model.OpportunityId" class="fw-bold text-decoration-none">
+                            <i class="bi bi-cash-stack me-1"></i> @Model.Opportunity.OpportunityName
+                        </a>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <hr class="my-2">
+                    <div>
+                        <strong>Detailed Notes:</strong>
+                        <p class="text-secondary mt-1 mb-0">@Model.Description</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+@model AcxiomCRM.ViewModels.User.EditUserViewModel
+@{
+    ViewData["Title"] = $"Edit User {Model.FullName}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h3 class="fw-bold mb-0 text-dark">Edit User: @Model.FullName</h3>
+                <span class="text-muted small">Update identity details, role permissions, or access state.</span>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Back to Users
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger p-2 small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label small fw-semibold"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label small fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Role" class="form-label small fw-semibold"></label>
+                        <select asp-for="Role" class="form-select">
+                            <option value="SalesExecutive">SalesExecutive</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                        <span asp-validation-for="Role" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label small fw-semibold text-dark"></label>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
